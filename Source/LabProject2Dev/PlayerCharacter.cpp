@@ -115,6 +115,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhanceInputCom->BindAction(ForwardInput, ETriggerEvent::Completed, this, &APlayerCharacter::Forward);
 		EnhanceInputCom->BindAction(RightInput, ETriggerEvent::Completed, this, &APlayerCharacter::Right);
 
+		EnhanceInputCom->BindAction(AttackInput, ETriggerEvent::Started, this, &APlayerCharacter::Attack);
+
 		EnhanceInputCom->BindAction(MouseXInput, ETriggerEvent::Started, this, &APlayerCharacter::MouseX);
 		EnhanceInputCom->BindAction(MouseYInput, ETriggerEvent::Started, this, &APlayerCharacter::MouseY);
 		EnhanceInputCom->BindAction(MouseXInput, ETriggerEvent::Triggered, this, &APlayerCharacter::MouseX);
@@ -123,6 +125,21 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhanceInputCom->BindAction(MouseYInput, ETriggerEvent::Completed, this, &APlayerCharacter::MouseY);
 	}
 
+}
+
+bool APlayerCharacter::GetIsAttack()
+{
+	return IsAttack;
+}
+
+void APlayerCharacter::Attack(const FInputActionValue& input)
+{
+	IsAttack = true;
+}
+
+void APlayerCharacter::ResetAttack()
+{
+	IsAttack = false;
 }
 
 void APlayerCharacter::Forward(const FInputActionValue& input)
@@ -144,6 +161,8 @@ void APlayerCharacter::MouseY(const FInputActionValue& input)
 {
 	Pitch = input.Get<float>();
 }
+
+
 
 
 

@@ -50,12 +50,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = InputSystem)
 	class UInputAction* MouseYInput;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = InputSystem)
+	class UInputAction* AttackInput;
+
+
+	UFUNCTION()
+	bool GetIsAttack();
+
+	UFUNCTION()
+	void ResetAttack();
 
 private:
 	void Forward(const FInputActionValue& input);
 	void Right(const FInputActionValue& input);
 	void MouseX(const FInputActionValue& input);
 	void MouseY(const FInputActionValue& input);
+	void Attack(const FInputActionValue& input);
 
 	void Movement();
 
@@ -67,7 +77,9 @@ public:
 	float InputY;
 
 
+private:
 
+	bool IsAttack;
 
 	float Yaw;
 	float Pitch;
