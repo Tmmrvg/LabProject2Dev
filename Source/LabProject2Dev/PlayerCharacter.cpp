@@ -102,6 +102,16 @@ void APlayerCharacter::Movement()
 	}
 }
 
+void APlayerCharacter::ResetAttack()
+{
+	IsAttacking = false;
+}
+
+void APlayerCharacter::Attack()
+{
+	
+}
+
 // Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {

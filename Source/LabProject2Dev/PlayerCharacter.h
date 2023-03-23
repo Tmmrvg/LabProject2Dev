@@ -56,7 +56,8 @@ private:
 	void Right(const FInputActionValue& input);
 	void MouseX(const FInputActionValue& input);
 	void MouseY(const FInputActionValue& input);
-
+	void Attack(const FInputActionValue& input);
+	
 	void Movement();
 
 public:
@@ -66,7 +67,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "PlayerVariables | Animation")
 	float InputY;
 
+	UFUNCTION()
+	void ResetAttack();
 
+	UFUNCTION()
+	void Attack();
 
 
 	float Yaw;
