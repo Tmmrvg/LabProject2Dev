@@ -6,6 +6,9 @@
 #include "GameFramework/GameModeBase.h"
 #include "MyGameModeBase.generated.h"
 
+
+class AMover;
+
 /**
  * 
  */
@@ -23,5 +26,13 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawned Objects")
+	TSubclassOf<AMover> Mover_BP;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawned Objects")
+	TArray<AMover*> Movers;
+
+	TArray<AMover*> GetMovers();
 	
 };
