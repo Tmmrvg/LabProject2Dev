@@ -53,12 +53,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = InputSystem)
 	class UInputAction* AttackInput;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = InputSystem)
+	class UInputAction* InventoryInput;
+
 
 	UFUNCTION()
 	bool GetIsAttack();
 
 	UFUNCTION()
 	void ResetAttack();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ToggleInventory();
+
 
 private:
 	void Forward(const FInputActionValue& input);
