@@ -9,6 +9,9 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputTriggers.h"
+#include "Components/SphereComponent.h"
+#include "SpawnableItem.h"
+#include "Item.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -24,9 +27,18 @@ APlayerCharacter::APlayerCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
+	Collider = CreateDefaultSubobject<USphereComponent>(TEXT("Collider"));
+	Collider->SetupAttachment(GetRootComponent());
+	Collider->InitSphereRadius(100.f);
+
+	Collider->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapBegin);
+	Collider->OnComponentEndOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapEnd);
+
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
+
+	Inventory = TArray<FInventorySlot>();
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
@@ -125,6 +137,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhanceInputCom->BindAction(MouseYInput, ETriggerEvent::Completed, this, &APlayerCharacter::MouseY);
 
 		EnhanceInputCom->BindAction(InventoryInput, ETriggerEvent::Started, this, &APlayerCharacter::ToggleInventory);
+		EnhanceInputCom->BindAction(UseInput, ETriggerEvent::Started, this, &APlayerCharacter::Use);
 		
 	}
 
@@ -140,10 +153,47 @@ void APlayerCharacter::Attack(const FInputActionValue& input)
 	IsAttack = true;
 }
 
+void APlayerCharacter::Use(const FInputActionValue& input)
+{
+	if (NearbyItems.Num() > 0)
+	{
+		PickUp();
+		return;
+	}
+
+	
+}
+
+void APlayerCharacter::PickUp()
+{
+	AddItem(NearbyItems[0]->Item, NearbyItems[0]->Amount);
+
+	ASpawnableItem* ItemToDestroy = NearbyItems[0];
+	NearbyItems.RemoveAt(0);
+	ItemToDestroy->Kill();
+
+
+}
+
+void APlayerCharacter::AddItem(UItem* item, uint8 amount)
+{
+	for (int i{}; i < Inventory.Num(); i++)
+	{
+		if (Inventory[i].Item->Name == item->Name)
+		{
+			Inventory[i].Amount += amount;
+			return;
+		}
+	}
+
+	Inventory.Add(FInventorySlot(item, amount));
+}
+
 void APlayerCharacter::ResetAttack()
 {
 	IsAttack = false;
 }
+
 
 void APlayerCharacter::Forward(const FInputActionValue& input)
 {
@@ -165,7 +215,21 @@ void APlayerCharacter::MouseY(const FInputActionValue& input)
 	Pitch = input.Get<float>();
 }
 
+void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->IsA<ASpawnableItem>())
+	{
+		NearbyItems.Add(Cast<ASpawnableItem>(OtherActor));
+	}
+}
 
+void APlayerCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
+{
+	if (OtherActor->IsA<ASpawnableItem>())
+	{
+		NearbyItems.Remove(Cast<ASpawnableItem>(OtherActor));
+	}
+}
 
 
 
